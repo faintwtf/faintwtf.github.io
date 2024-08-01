@@ -1,2 +1,64 @@
-<h1>faint ss</h1>
-<h2>website under construction</h2>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>faint ss</title>
+</head>
+<body>
+    <form id="inputForm">
+        <label for="inputString">username:</label>
+        <input type="text" id="inputString" maxlength="20" required>
+        <button type="submit">Whitelist</button>
+    </form>
+
+    <script>
+        document.getElementById('inputForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const inputString = document.getElementById('inputString').value;
+
+            if (inputString.length <= 20) {
+                saveToGitHub(inputString);
+            } else {
+                alert('String must be 20 characters or less.');
+            }
+        });
+
+        async function saveToGitHub(content) {
+            const token = 'YOUR_GITHUB_TOKEN'; // Store this securely, never expose in client-side code
+            const repo = 'YOUR_GITHUB_USERNAME/YOUR_REPO_NAME';
+            const path = 'path/to/your/file.txt';
+            const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
+
+            const response = await fetch(apiUrl, {
+                headers: {
+                    'Authorization': `token ${token}`
+                }
+            });
+            const fileData = await response.json();
+            const sha = fileData.sha; // Get the SHA of the existing file
+
+            const newContent = {
+                message: "Updating file with new content",
+                content: btoa(content),
+                sha: sha
+            };
+
+            const updateResponse = await fetch(apiUrl, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `token ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newContent)
+            });
+
+            if (updateResponse.ok) {
+                alert('File updated successfully!');
+            } else {
+                alert('Error updating file.');
+            }
+        }
+    </script>
+</body>
+</html>
