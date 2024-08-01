@@ -27,7 +27,7 @@
         async function saveToGitHub(newString) {
             const token = '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';
             const repo = 'faintwtf/faintwtf.github.io';
-            const path = 'whitelists/plrs.html';
+            const path = 'whitelists/plrs.txt';
             const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
 
             const response = await fetch(apiUrl, {
