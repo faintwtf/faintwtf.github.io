@@ -7,7 +7,7 @@
 </head>
 <body>
     <form id="inputForm">
-        <label for="inputString">username:</label>
+        <label for="inputString">Username:</label>
         <input type="text" id="inputString" maxlength="20" required>
         <button type="submit">Whitelist</button>
     </form>
@@ -24,8 +24,8 @@
             }
         });
 
-        async function saveToGitHub(content) {
-            const token = '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'; // Store this securely, never expose in client-side code
+        async function saveToGitHub(newString) {
+            const token = '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';
             const repo = 'faintwtf/faintwtf.github.io';
             const path = 'whitelists/plrs.html';
             const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
@@ -35,12 +35,31 @@
                     'Authorization': `token ${token}`
                 }
             });
+
+            if (!response.ok) {
+                alert('Error fetching file.');
+                return;
+            }
+
             const fileData = await response.json();
             const sha = fileData.sha; // Get the SHA of the existing file
+            const content = atob(fileData.content); // Decode Base64 content
 
-            const newContent = {
+            // Parse the existing content and add the new string
+            let newContent;
+            const match = content.match(/a\s*=\s*\{(.*?)\}/);
+
+            if (match) {
+                const existingStrings = match[1].split(',').map(s => s.trim().replace(/["']/g, ''));
+                existingStrings.push(newString);
+                newContent = `a = {"${existingStrings.join('", "')}"}`;
+            } else {
+                newContent = `a = {"${newString}"}`;
+            }
+
+            const updatedContent = {
                 message: "Updating file with new content",
-                content: btoa(content),
+                content: btoa(newContent), // Encode content to Base64
                 sha: sha
             };
 
@@ -50,7 +69,7 @@
                     'Authorization': `token ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(newContent)
+                body: JSON.stringify(updatedContent)
             });
 
             if (updateResponse.ok) {
