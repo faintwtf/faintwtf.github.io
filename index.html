@@ -25,9 +25,9 @@
         });
 
         async function saveToGitHub(content) {
-            const token = 'YOUR_GITHUB_TOKEN'; // Store this securely, never expose in client-side code
-            const repo = 'YOUR_GITHUB_USERNAME/YOUR_REPO_NAME';
-            const path = 'path/to/your/file.txt';
+            const token = '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'; // Store this securely, never expose in client-side code
+            const repo = 'faintwtf/faintwtf.github.io';
+            const path = 'whitelists/plrs.html';
             const apiUrl = `https://api.github.com/repos/${repo}/contents/${path}`;
 
             const response = await fetch(apiUrl, {
